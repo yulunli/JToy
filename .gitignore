@@ -37,8 +37,8 @@
 *.sublime-*
 .nb-gradle
 /gradle
-.gradlew
-.gradlew.bat
+gradlew
+gradlew.bat
 
 # Java
 *.class
