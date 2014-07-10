@@ -36,6 +36,7 @@
 .idea
 *.sublime-*
 .nb-gradle
+/gradle
 
 # Java
 *.class
