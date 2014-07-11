@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 public class SolutionTest extends TestCase {
     public static void testSolution() {
-        Solution solution = new Solution();
-        assertEquals(solution.solution(), "Hello!");
+        System.out.println(Solution.getBest("abacba", "abccza", 1));
+//        assertEquals(solution.solution(), "Hello!");
     }
 }
