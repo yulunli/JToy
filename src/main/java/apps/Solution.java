@@ -1,5 +1,4 @@
 package apps;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -9,105 +8,32 @@ public class Solution {
         Scanner in = new Scanner(System.in);
         int num_cases = in.nextInt();
         for (int kase = 0; kase < num_cases; kase++) {
-            int len = in.nextInt();
-            int K = in.nextInt();
-//            System.out.println(bf(in.next(), K));
-            System.out.println(printProb(in.next(), K));
+            BigInteger N = in.nextBigInteger();
+            System.out.println(gaurav(N));
         }
     }
 
-    public static String printProb(String in, int K) {
-        BigInteger count = BigInteger.ZERO;
-        int len = in.length();
-        int[] ns = new int[len];
-        for (int i = 0; i < len; i++) {
-            ns[i] = Integer.parseInt(String.valueOf(in.charAt(i)));
-        }
-        int cache = 0; // what's in the first slice
-        for (int i = 0; i < K; i++) {
-            cache += ns[i];
-        }
-        if (K == len) {
-            count = new BigInteger(Integer.valueOf(cache).toString()).multiply(new BigInteger(Integer.valueOf(cache).toString()));
-        } else {
-            cache += ns[K];
-            for (int i = 0; i < len - K; i++) {
-                // If reaching end
-                if (i + K == len - 1) {
-                    int tempCount = 0;
-                    for (int j = i; j < len; j++) {
-                        if (ns[j]  == 1) {
-                            tempCount += 1;
-                        }
-                    }
-                    count = count.add(arrange2(tempCount));
-                } else {
-                    if (ns[i] == 1) {
-                        if (cache > 1) {
-                            count = count.add(new BigInteger(Integer.valueOf(2 * (cache - 1)).toString()));
-                        }
-
-                    }
-                    // shift slice
-                    cache = cache - ns[i] + ns[i + K + 1];
-                }
-            }
-            for (int n : ns) {
-                count = count.add(new BigInteger(Integer.valueOf(n).toString()));
+    public static String gaurav(BigInteger N) {
+        BigInteger n = new BigDecimal(Math.log(N.doubleValue()) / Math.log(2)).toBigInteger();
+        BigInteger[] count_is = new BigInteger[]{BigInteger.ZERO, BigInteger.ONE, BigInteger.ZERO, BigInteger.ZERO};
+        if (n.compareTo(BigInteger.ZERO) > 0) {
+            count_is[2] = BigInteger.ONE;  //4 in 6248
+            if (n.compareTo(BigInteger.ONE) > 0) {
+                count_is[0] = n.subtract(BigInteger.ONE);
             }
         }
-        BigInteger base = BigDecimal.valueOf((Math.pow(len, 2))).toBigInteger();
-        BigInteger gcd = gcd(base, count);
-        return count.divide(gcd) + "/" + base.divide(gcd);
+        BigInteger[] count_js = new BigInteger[]{N.divide(BigInteger.ONE.add(BigInteger.ONE)), BigInteger.ZERO, N.divide(BigInteger.ONE.add(BigInteger.ONE)).add(N.mod(BigInteger.ONE.add(BigInteger.ONE))), BigInteger.ZERO};
+        BigInteger[] count = new BigInteger[4];  //6, 2, 4, 8
+        System.arraycopy(count_is, 0, count, 0, 4);
+        count[0] = count[0].add(count_is[0].multiply(count_js[0]).add(count_is[2].multiply(count_js[2])));
+        count[1] = count[1].add(count_is[1].multiply(count_js[0]));
+        count[2] = count[2].add(count_is[0].multiply(count_js[2]).add(count_is[2].multiply(count_js[0])));
+        count[3] = count[3].add(count_is[1].multiply(count_js[2]));
+        return "" + count[0].multiply(new BigInteger("6")).add(count[1].multiply(new BigInteger("2")).add(count[2].multiply(new BigInteger("4")).add(count[3].multiply(new BigInteger("8"))))).mod(new BigInteger("10"));
     }
 
-    public static String bf(String in, int K) {
-        BigInteger count = BigInteger.ZERO;
-        int len = in.length();
-        int[] ns = new int[len];
-        for (int i = 0; i < len; i++) {
-            ns[i] = Integer.parseInt(String.valueOf(in.charAt(i)));
-        }
-        List<Integer> s = new ArrayList<Integer>();
-        for (int i = 0; i < len; i++) {
-            if (ns[i] == 1) {
-                s.add(i);
-            }
-        }
-        for (int n : s) {
-            for (int m: s) {
-                if (Math.abs(n - m) <= K) {
-                    count = count.add(BigInteger.ONE);
-                }
-            }
-        }
-        if (count.equals(BigInteger.ZERO)) {
-            return "0/1";
-        }
-        BigInteger base = BigDecimal.valueOf((Math.pow(len, 2))).toBigInteger();
-        BigInteger gcd = gcd(base, count);
-        return count.divide(gcd) + "/" + base.divide(gcd);
-    }
-
-    public static BigInteger gcd(BigInteger a, BigInteger b) {
-        while (!b.equals(BigInteger.ZERO)) {
-            BigInteger c = new BigInteger(b.toString());
-            b = a.mod(b);
-            a = new BigInteger(c.toString());
-        }
-        return a;
-    }
-
-    public static BigInteger arrange2(int n) {
-        if (n < 2) {
-            return BigInteger.ZERO;
-        } else {
-            return new BigInteger(Integer.valueOf(n).toString()).multiply(new BigInteger(Integer.valueOf(n).toString()).subtract(BigInteger.ONE));
-        }
-    }
-
-    public static void pr(int[] a) {
-        for (int anA : a) {
+    public static void pr(double[] a) {
+        for (double anA : a) {
             System.out.print(anA + " ");
         }
         System.out.println();
