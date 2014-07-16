@@ -1,41 +1,104 @@
 package apps;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.*;
 
+import java.util.*;
 public class Solution {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-        int num_cases = in.nextInt();
-        for (int kase = 0; kase < num_cases; kase++) {
-            BigInteger N = in.nextBigInteger();
-            System.out.println(gaurav(N));
+        int N = in.nextInt();
+        int[] ns = new int[N];
+        for (int i = 0; i < N; i++) {
+            ns[i] = in.nextInt();
         }
+//        int count = N;
+//        for (int i = 0; i < N - 1; i++) {
+//            //System.out.println("Find: " + i);
+//            int tempMax = ns[i];
+//            for (int j = i+1; j < N; j++) {
+//                if (ns[j] >= tempMax) {
+//                    for (int k = i; k <= j; k++) {
+//                        //System.out.print(ns[k] + " ");
+//                    }
+//                    //System.out.println();
+//                    count += 1;
+//                    tempMax = ns[j];
+//                } else if (ns[j] >= ns[i]) {
+//                    continue;
+//                } else {
+//                    break;
+//                }
+//            }
+//        }
+//        System.out.println(count);
+        solve(ns);
     }
 
-    public static String gaurav(BigInteger N) {
-        BigInteger n = new BigDecimal(Math.log(N.doubleValue()) / Math.log(2)).toBigInteger();
-        BigInteger[] count_is = new BigInteger[]{BigInteger.ZERO, BigInteger.ONE, BigInteger.ZERO, BigInteger.ZERO};
-        if (n.compareTo(BigInteger.ZERO) > 0) {
-            count_is[2] = BigInteger.ONE;  //4 in 6248
-            if (n.compareTo(BigInteger.ONE) > 0) {
-                count_is[0] = n.subtract(BigInteger.ONE);
+    public static void solve(int[] ns) {
+        int N = 7;
+//        int N = 1000005;
+        int top = 0;
+        int n = ns.length;
+        int[] a = new int[N];
+        System.arraycopy(ns, 0, a, 1, n);
+        int[] stack = new int[N];
+        int[] bit = new int[N];
+        int[] left = new int[N];
+        int[] right = new int[N];
+        for(int i = 1; i <= n; i++) {
+            System.out.println(top - 1);
+            p(stack);
+            while (top>0 && a[i] > a[stack[top-1]]) {
+                top--;
             }
-        }
-        BigInteger[] count_js = new BigInteger[]{N.divide(BigInteger.ONE.add(BigInteger.ONE)), BigInteger.ZERO, N.divide(BigInteger.ONE.add(BigInteger.ONE)).add(N.mod(BigInteger.ONE.add(BigInteger.ONE))), BigInteger.ZERO};
-        BigInteger[] count = new BigInteger[4];  //6, 2, 4, 8
-        System.arraycopy(count_is, 0, count, 0, 4);
-        count[0] = count[0].add(count_is[0].multiply(count_js[0]).add(count_is[2].multiply(count_js[2])));
-        count[1] = count[1].add(count_is[1].multiply(count_js[0]));
-        count[2] = count[2].add(count_is[0].multiply(count_js[2]).add(count_is[2].multiply(count_js[0])));
-        count[3] = count[3].add(count_is[1].multiply(count_js[2]));
-        return "" + count[0].multiply(new BigInteger("6")).add(count[1].multiply(new BigInteger("2")).add(count[2].multiply(new BigInteger("4")).add(count[3].multiply(new BigInteger("8"))))).mod(new BigInteger("10"));
-    }
-
-    public static void pr(double[] a) {
-        for (double anA : a) {
-            System.out.print(anA + " ");
+            System.out.println(top - 1);
+            if (top > 0) {
+                left[i] = stack[top-1];
+            } else {
+                left[i] = 0;
+            }
+            stack[top++] = i;
         }
         System.out.println();
+//        p(left);
+        for(int i = n; i >= 1; i--) {
+            System.out.println(top - 1);
+            p(stack);
+            while (top>0 && a[i] < a[stack[top-1]]) top--;
+            System.out.println(top - 1);
+            if (top > 0) {
+                right[i] = stack[top-1];
+            } else {
+                right[i] = n+1;
+            }
+            stack[top++] = i;
+        }
+//        p(right);
+        int ans = 0;
+        for (int L = 1; L <= n; L++) {
+            for (int R = L; R <= n; R++) {
+                if (left[R] < L && right[L] > R) {
+                    System.out.println(left[R] + " < " + L + "; " + right[L] + " > " + R);
+                    ans += 1;
+                }
+            }
+        }
+        System.out.println(ans + 1);
+    }
+
+    public static void add(int x, int v, int[] bit, int n) {
+        while(x<=n) { bit[x] += v; x += (x&-x); }
+    }
+
+    public static int ask(int x, int[] bit) {
+        int ret=0;
+        while(x > 0) { ret += bit[x]; x -= (x&-x); }
+        return ret;
+    }
+
+    public static void p(int[] a) {
+        System.out.print("[");
+        for (int anA: a) {
+            System.out.print(anA + ", ");
+        }
+        System.out.println("]");
     }
 }
