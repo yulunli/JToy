@@ -8,5 +8,6 @@ repositories {
 }
 
 dependencies {
+    runtime 'com.googlecode.princeton-java-algorithms:algorithms:4.0.0'
     testCompile 'junit:junit:4.11'
 }
